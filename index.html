@@ -5,18 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="assets/favicon.ico" rel="shortcut icon" />
   <link rel="stylesheet" href="css/owfont-regular.css" />
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="src/sass/style.css" />
   <title>momentum</title>
 </head>
 <body>
   <header class="header">
-    <div class="player">
-      <div class="player-controls">
-        <button class="play-prev player-icon"></button>
-        <button class="play player-icon"></button>
-        <button class="play-next player-icon"></button>
+    <div class="audio-player">
+      <div class="timeline">
+        <div class="progress"></div>
       </div>
-      <ul class="play-list"></ul>
+      <div class="controls">
+        <div class="play-container">
+          <button class="play-prev player-icon"></button>
+          <button class="play player-icon"></button>
+          <button class="play-next player-icon"></button>
+        </div>
+        <div class="audio_time">
+          <div class="current">0:00</div>
+          <div class="divider">/</div>
+          <div class="length"></div>
+        </div>
+        <div class="audio_name">Music Song</div>
+        <div class="volume-container">
+          <div class="volume-button">
+            <div class="volume icono-volumeMedium"></div>
+          </div>
+          <div class="volume-slider">
+            <div class="volume-percentage"></div>
+          </div>
+        </div>
+      </div>
+    <ul class="play-list"></ul>
     </div>
     <div class="weather">
       <input type="text" class="city" />
@@ -39,16 +58,45 @@
     <date class="date"></date>
     <div class="greeting-container">
       <span class="greeting"></span>
-      <input type="text" class="name" placeholder="[enter your name]"/>
+      <input type="text" class="name name_greeting" placeholder="[enter your name]"/>
     </div>
   </main>
   <footer class="footer">
-    <button class="change-quote"></button>
-    <div>
-      <div class="quote"></div>
-      <div class="author"></div>
+    <div class="footer_item">
+      <div class="icono-sliders"></div>
+      <div class="settings_menu class_hidden">
+        <div class="setting_menu_item">weather 
+          <button class="button_setting_default"></button>
+        </div>
+        <div class="setting_menu_item">audio player</div>
+        <div class="setting_menu_item">time</div>
+        <div class="setting_menu_item">date</div>
+        <div class="setting_menu_item">background
+          <button class="button_setting_default button_background" value="github">Github collection</button>
+          <button class="button_setting_default button_background" value="unsplash">Unsplash API</button>
+          <button class="button_setting_default button_background" value="flickr">Flickr API</button>
+
+        </div>
+        <div class="setting_menu_item">quotes</div>
+        <div class="setting_menu_item">language
+          <button class="button_setting_default button_language" value="eng">ENG</button>
+          <button class="button_setting_default button_language" value="rus">RUS</button></div>
+
+      </div>
+    </div>
+
+    <div class="footer_item">
+      <button class="change-quote"></button>
+      <div>
+        <div class="quote"></div>
+        <div class="author"></div>
+      </div>
+    </div>
+    <div class="footer_item">
+      <h1>ONE</h1>
+      
     </div>
   </footer>
-  <script src="js/script.js"></script>
+  <script type="module" src="js/script.js"></script>
 </body>
 </html>
