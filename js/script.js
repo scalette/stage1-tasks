@@ -36,7 +36,6 @@ function showGreeting(){
     const placeholder = document.querySelector('.name_greeting')
     if (localStorage.getItem('language') === 'rus'){
         greetingField.textContent = `Добрый ${getTimeOfDay()}, `;
-        console.log('this:', placeholder)
         placeholder.placeholder = '[введите ваше имя]'
      } else {
         greetingField.textContent = `Good ${getTimeOfDay()}, `;
@@ -50,7 +49,6 @@ function getTimeOfDay(defaultV){
         hour12: false,
         hour: 'numeric',
       })
-    console.log(defaultV)
     let greetings = ['morning', 'afternoon', 'evening', 'night'];
     if (localStorage.getItem('language') === 'rus' && !defaultV){
        greetings = ['утро', 'день', 'вечер', 'ночь'];
@@ -66,7 +64,6 @@ function setLocalStorage() {
     localStorage.setItem('name', name.value);
     
     const city = document.querySelector('.city')
-    localStorage.setItem('city', city.value);
   }
 
 function getLocalStorage() {
@@ -76,6 +73,19 @@ function getLocalStorage() {
     }
     if(localStorage.getItem('city')) {
         city.value = localStorage.getItem('city');
+    }
+    if(localStorage.getItem('todoList')) {
+        let todoList = document.querySelector('.todoList_items')
+        todoList.innerHTML = localStorage.getItem('todoList')
+        console.log(todoList)
+        const todoListNew = document.querySelectorAll('.icono-check')
+        todoListNew.forEach(el=>{
+            el.addEventListener('click', event => {
+                el.parentNode.remove()
+                const todoListUpdated = document.querySelector('.todoList_items')
+                localStorage.setItem('todoList', todoListUpdated.innerHTML)
+            })
+        })
     }
 }
 window.addEventListener('load', getLocalStorage)
@@ -89,12 +99,30 @@ function getRandomNum(min, max){
     max = Math.floor(max)
     return Math.floor(Math.random() * (max - min + 1) + min)
 }
-function setBg(){
+async function setBg(){
     const timeOfDay = getTimeOfDay(1)
     const randomNumPad = (randomNum + '').padStart(2, "0"); 
     
     const img = new Image();
+    if (localStorage.getItem('pictureAPI') === 'github'){
     img.src = `https://raw.githubusercontent.com/scalette/stage1-tasks/assets/images/${timeOfDay}/${randomNumPad}.jpg`
+    }
+    else if(localStorage.getItem('pictureAPI') === 'unsplash'){
+        const unsplashAccesKey = 'EjA_Kj7TTHuQdA8v6Pk2AZTOmBYK5NiL97UxYEv8IVA'
+        const pictureTag =  localStorage.getItem('picTag') || timeOfDay
+        const unsplashURL = `https://api.unsplash.com/photos/random?orientation=landscape&query=${pictureTag}&client_id=${unsplashAccesKey}`
+        const res = await fetch(unsplashURL);
+        const data = await res.json();
+        img.src = data.urls.regular;
+    }
+    else if(localStorage.getItem('pictureAPI') === 'flickr'){
+        const unsplashAccesKey = 'b46afbf171e960fa8b2d09235c505782'
+        const pictureTag =  localStorage.getItem('picTag') || timeOfDay
+        const unsplashURL = `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${unsplashAccesKey}&tags=${pictureTag}&extras=url_l&format=json&nojsoncallback=1`
+        const res = await fetch(unsplashURL);
+        const data = await res.json();
+        img.src = data.photos.photo[Math.round(Math.random() * 100)].url_l;
+    }
     img.onload = () => {
         document.body.style.backgroundImage = `url(${img.src})`;
     }
@@ -160,12 +188,22 @@ const quoteRandom = document.querySelector('.change-quote');
 const quote = document.querySelector('.quote');
 const author = document.querySelector('.author');
 async function getQuotes() {  
-    const quotes = 'assets/quotes/quotes.json';
-    const res = await fetch(quotes);
-    const data = await res.json(); 
-    const quotesRandom = getRandomNum(0, data.length-1)
-    quote.textContent = data[quotesRandom].quote
-    author.textContent = data[quotesRandom].author
+    if (localStorage.getItem('language') === 'rus'){
+        const quotes = 'assets/quotes/quotesRus.json';
+        const res = await fetch(quotes);
+        const data = await res.json(); 
+        const quotesRandom = getRandomNum(0, data.length-1)
+        quote.textContent = data[quotesRandom].quote
+        author.textContent = data[quotesRandom].author
+     } else {    
+     const quotes = 'assets/quotes/quotes.json';
+     const res = await fetch(quotes);
+     const data = await res.json(); 
+     const quotesRandom = getRandomNum(0, data.length-1)
+     quote.textContent = data[quotesRandom].quote
+     author.textContent = data[quotesRandom].author
+     }
+
   }
   
 quoteRandom.addEventListener('click', getQuotes)
@@ -301,39 +339,76 @@ const settingsField = document.querySelector('.settings_menu')
 const settings = document.querySelector('.icono-sliders')
 
 document.addEventListener('click', (el)=> {
-    console.log(el.path.includes(settingsField))
-    console.log('settingsField:', !Array.from(settingsField.classList).includes('class_hidden'))
-    console.log('settings', Array.from(settings.classList).includes('class_hidden'))
-    console.log('target', !Array.from(el.target.classList).includes('settings_menu'))
     if(!el.path.includes(settingsField) && 
         !Array.from(settingsField.classList).includes('class_hidden') &&
         Array.from(settings.classList).includes('class_hidden')){
-            console.log('reverse toggle')
     settings.classList.toggle('class_hidden')
     settingsField.classList.toggle('class_hidden')
     }
 }, true)
 
 settings.addEventListener('click', ()=>{
-    console.log('toggle')
     settings.classList.toggle('class_hidden')
     settingsField.classList.toggle('class_hidden')
 })
 
 const buttonsLanguage = document.querySelectorAll('.button_language')
 const buttonsPicturesAPI = document.querySelectorAll('.button_background')
+const button_tag = document.querySelector('.button_tag')
+
+button_tag.addEventListener('focusout', ()=>{
+    localStorage.setItem('picTag', button_tag.value);
+})
 
 buttonsLanguage.forEach((el)=>{
     el.addEventListener('click', (event)=> {
-        console.log(event.target.value)
         localStorage.setItem('language', event.target.value);
+        window.location.reload();
     })
 })
 
 buttonsPicturesAPI.forEach((el)=>{
     el.addEventListener('click', (event)=> {
-        console.log(event.target.value)
         localStorage.setItem('pictureAPI', event.target.value);
     })
 })
+//todo list
+const todoListIcon =  document.querySelector('.icono-comment')
+const todoListField = document.querySelector('.todo_list')
+
+document.addEventListener('click', (el)=> {
+    if(!el.path.includes(todoListField) && 
+        !Array.from(todoListField.classList).includes('icono-comment') &&
+        Array.from(todoListIcon.classList).includes('class_hidden')){
+            todoListIcon.classList.toggle('class_hidden')
+            todoListField.classList.toggle('class_hidden')
+    }
+}, true)
+
+todoListIcon.addEventListener('click', ()=>{
+    todoListIcon.classList.toggle('class_hidden')
+    todoListField.classList.toggle('class_hidden')
+})
+
+const todoPlus = document.querySelector('.icono-plus')
+
+
+todoPlus.addEventListener('click', ()=>{
+    const text = document.querySelector('.todo_list_text')
+    console.log(text.value)
+    const div = document.createElement('div')
+    div.classList.add('todoList_item')
+    const divIcon = document.createElement('div')
+    divIcon.classList.add('icono-check')
+    div.textContent = text.value;
+    div.appendChild(divIcon);
+    div.addEventListener('click', ()=>{
+        div.remove()
+    })
+    const todoListItems = document.querySelector('.todoList_items')
+    todoListItems.appendChild(div);
+    let todoList = document.querySelector('.todoList_items')
+    localStorage.setItem('todoList', todoList.innerHTML)
+})
+
 runApp();
