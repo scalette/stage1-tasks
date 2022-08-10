@@ -2921,4 +2921,12 @@ body {
   justify-content: flex-start;
 }
 
+.icono-comment {
+  cursor: pointer;
+}
+
+.icono-sliders {
+  cursor: pointer;
+}
+
 /*# sourceMappingURL=style.css.map */
